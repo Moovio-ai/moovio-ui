@@ -23,7 +23,7 @@ jobs:
 
       - name: Build Vite app
         run: |
-          export VITE_API_URL="https://cirolini.com.br/api"
+          export VITE_API_URL="https://www.cirolini.com.br/api"
           npm run build
 
       - name: Deploy to S3
