@@ -22,7 +22,9 @@ jobs:
         run: npm ci
 
       - name: Build Vite app
-        run: npm run build
+        run: |
+          export VITE_API_URL="https://cirolini.com.br/api"
+          npm run build
 
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@master
