@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Eye, EyeOff, Key } from 'lucide-react';
+import { Eye, EyeOff, Key, Shield, DollarSign } from 'lucide-react';
 
 interface ApiKeySetupProps {
   isOpen: boolean;
@@ -34,8 +34,31 @@ export const ApiKeySetup: React.FC<ApiKeySetupProps> = ({ isOpen, onClose }) => 
           </div>
           <h3 className="text-xl font-semibold text-white mb-2">OpenAI API Key Required</h3>
           <p className="text-gray-400 text-sm">
-            To use Moovio's AI features, please enter your OpenAI API key. This key will be stored locally and securely.
+            To use Moovio's AI features, please enter your OpenAI API key.
           </p>
+        </div>
+
+        {/* Privacy and security information */}
+        <div className="bg-moovio-gray rounded-lg p-4 mb-6">
+          <div className="flex items-start gap-3 mb-3">
+            <Shield size={20} className="text-green-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="text-white text-sm font-medium mb-1">Privacy & Security</h4>
+              <p className="text-gray-400 text-xs">
+                Your API key is stored only in your browser's local storage and is never stored on our servers.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-start gap-3">
+            <DollarSign size={20} className="text-yellow-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="text-white text-sm font-medium mb-1">API Costs</h4>
+              <p className="text-gray-400 text-xs">
+                API usage costs will be charged directly to you by OpenAI based on your API key usage.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="mb-6">

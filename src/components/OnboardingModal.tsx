@@ -19,6 +19,14 @@ const LANGUAGES = [
   'Japanese', 'Korean', 'Chinese', 'Hindi', 'Russian', 'Arabic'
 ];
 
+const FAMOUS_ACTORS = [
+  'Ryan Gosling', 'Emma Stone', 'Leonardo DiCaprio', 'Margot Robbie',
+  'Ryan Reynolds', 'Scarlett Johansson', 'Dwayne Johnson', 'Jennifer Lawrence',
+  'Chris Evans', 'Zendaya', 'Tom Holland', 'Anne Hathaway',
+  'Will Smith', 'Gal Gadot', 'Chris Hemsworth', 'Natalie Portman',
+  'Robert Downey Jr.', 'Emma Watson', 'Brad Pitt', 'Angelina Jolie'
+];
+
 export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   isOpen,
   onComplete,
@@ -54,13 +62,16 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     }));
   };
 
-  const handleAddActor = () => {
-    if (actorInput.trim() && !preferences.favoriteActors.includes(actorInput.trim())) {
+  const handleAddActor = (actorName?: string) => {
+    const actor = actorName || actorInput.trim();
+    if (actor && !preferences.favoriteActors.includes(actor)) {
       setPreferences(prev => ({
         ...prev,
-        favoriteActors: [...prev.favoriteActors, actorInput.trim()]
+        favoriteActors: [...prev.favoriteActors, actor]
       }));
-      setActorInput('');
+      if (!actorName) {
+        setActorInput('');
+      }
     }
   };
 
@@ -134,6 +145,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
           {step === 2 && (
             <div>
               <h3 className="text-lg font-semibold text-white mb-4">Favorite actors/actresses?</h3>
+              
+              {/* Input field */}
               <div className="mb-4">
                 <div className="flex gap-2">
                   <input
@@ -145,14 +158,31 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                     className="flex-1 bg-moovio-gray border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:border-moovio-red focus:outline-none"
                   />
                   <button
-                    onClick={handleAddActor}
+                    onClick={() => handleAddActor()}
                     className="netflix-button px-4"
                   >
                     Add
                   </button>
                 </div>
               </div>
+
+              {/* Famous actors suggestions */}
+              <div className="mb-4">
+                <p className="text-gray-400 text-sm mb-2">Popular actors:</p>
+                <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                  {FAMOUS_ACTORS.filter(actor => !preferences.favoriteActors.includes(actor)).map((actor) => (
+                    <button
+                      key={actor}
+                      onClick={() => handleAddActor(actor)}
+                      className="text-left p-2 rounded-lg text-sm bg-moovio-gray text-gray-300 hover:bg-moovio-gray-light transition-colors duration-200"
+                    >
+                      {actor}
+                    </button>
+                  ))}
+                </div>
+              </div>
               
+              {/* Selected actors */}
               <div className="flex flex-wrap gap-2">
                 {preferences.favoriteActors.map((actor) => (
                   <span

@@ -1,7 +1,6 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Mic, Loader2 } from 'lucide-react';
+import { ArrowLeft, Send, Mic, Loader2, Menu } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useChat } from '../hooks/useChat';
 import { ChatMessage } from '../types';
@@ -11,6 +10,7 @@ import { MovieCarousel } from '../components/MovieCarousel';
 import { SuggestionChips } from '../components/SuggestionChips';
 import { VoiceRecorder } from '../components/VoiceRecorder';
 import { ApiKeySetup } from '../components/ApiKeySetup';
+import { HeaderMenu } from '../components/HeaderMenu';
 
 export const Chat: React.FC = () => {
   const navigate = useNavigate();
@@ -62,6 +62,23 @@ export const Chat: React.FC = () => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  const handleMenuAction = async (action: string) => {
+    let message = '';
+    
+    switch (action) {
+      case 'lists':
+        message = 'Quais são as minhas listas de filmes e séries?';
+        break;
+      case 'preferences':
+        message = 'Quais são as minhas preferências de filmes e séries?';
+        break;
+    }
+    
+    if (message) {
+      await sendMessage(message);
     }
   };
 
@@ -152,20 +169,24 @@ export const Chat: React.FC = () => {
     <div className="min-h-screen bg-moovio-darker flex flex-col w-full">
       {/* Header */}
       <header className="bg-moovio-dark border-b border-gray-800 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-3">
-          <button
-            onClick={() => navigate('/')}
-            className="p-2 hover:bg-moovio-gray rounded-lg transition-colors duration-200"
-          >
-            <ArrowLeft size={20} className="text-white" />
-          </button>
-          
-          <Avatar size="sm" state="idle" />
-          
-          <div>
-            <h1 className="text-white font-semibold">Moovio</h1>
-            <p className="text-gray-400 text-sm">Your AI Assistant</p>
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate('/')}
+              className="p-2 hover:bg-moovio-gray rounded-lg transition-colors duration-200"
+            >
+              <ArrowLeft size={20} className="text-white" />
+            </button>
+            
+            <Avatar size="sm" state="idle" />
+            
+            <div>
+              <h1 className="text-white font-semibold">Moovio</h1>
+              <p className="text-gray-400 text-sm">Your AI Assistant</p>
+            </div>
           </div>
+          
+          <HeaderMenu onAction={handleMenuAction} />
         </div>
       </header>
 
