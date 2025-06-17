@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from '../components/Avatar';
@@ -8,6 +7,7 @@ import { OnboardingModal } from '../components/OnboardingModal';
 import { WelcomeScreen } from '../components/WelcomeScreen';
 import { UserPreferences } from '../types';
 import { apiService } from '../services/api';
+import { Sparkles, TrendingUp, MessageCircle, Zap, Play, Search, Star, Heart } from 'lucide-react';
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -107,6 +107,37 @@ Frequência de consumo: ${preferences.watchFrequency === 'daily' ? 'Diário' :
     }
   };
 
+  const quickActions = [
+    {
+      icon: <TrendingUp className="w-5 h-5" />,
+      text: "Movie Recommendation",
+      description: "Get a personalized movie suggestion",
+      onClick: () => handleQuickAction("Recommend a movie for me"),
+      accent: "text-pink-400 bg-pink-500/10"
+    },
+    {
+      icon: <Sparkles className="w-5 h-5" />,
+      text: "TV Show Discovery",
+      description: "Find your next binge-worthy series",
+      onClick: () => handleQuickAction("Suggest a TV show for me"),
+      accent: "text-blue-400 bg-blue-500/10"
+    },
+    {
+      icon: <Search className="w-5 h-5" />,
+      text: "What's Trending",
+      description: "See what's popular right now",
+      onClick: () => handleQuickAction("What's trending right now?"),
+      accent: "text-orange-400 bg-orange-500/10"
+    },
+    {
+      icon: <MessageCircle className="w-5 h-5" />,
+      text: "Start Chatting",
+      description: "Ask me anything about entertainment",
+      onClick: () => navigate('/chat'),
+      accent: "text-green-400 bg-green-500/10"
+    }
+  ];
+
   console.log('Current state - showWelcome:', showWelcome, 'showOnboarding:', showOnboarding);
 
   // Show welcome screen if user hasn't seen onboarding
@@ -127,64 +158,76 @@ Frequência de consumo: ${preferences.watchFrequency === 'daily' ? 'Diário' :
 
       {/* Main content */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 pb-20">
-        {/* Avatar and greeting */}
-        <div className="text-center mb-12">
-          <Avatar size="xl" className="mx-auto mb-6" />
-          <h2 className="text-2xl font-semibold text-white mb-3">
-            Hi! How can I help you today?
+        {/* Hero section */}
+        <div className="text-center mb-16 max-w-2xl">
+          <Avatar size="xl" className="mx-auto mb-8" />
+          
+          <h2 className="text-4xl font-bold text-white mb-6 leading-tight">
+            Hi! How can I help you 
+            <span className="text-gradient block mt-2">discover amazing content?</span>
           </h2>
           
           {isStoringPreferences ? (
-            <div className="bg-moovio-dark/50 rounded-lg p-4 max-w-md mx-auto mb-4">
-              <p className="text-gray-300 text-sm">
-                Armazenando suas preferências...
-              </p>
+            <div className="bg-moovio-gray/20 backdrop-blur-sm rounded-3xl p-8 border border-gray-700/30 mb-8 animate-fade-in">
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <div className="relative">
+                  <div className="w-3 h-3 bg-moovio-red rounded-full animate-pulse"></div>
+                  <div className="absolute inset-0 w-3 h-3 bg-moovio-red rounded-full animate-ping"></div>
+                </div>
+                <p className="text-gray-300 font-medium text-lg">Storing your preferences...</p>
+              </div>
+              <div className="w-full bg-gray-700/50 rounded-full h-2">
+                <div className="bg-gradient-to-r from-moovio-red to-pink-500 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+              </div>
             </div>
           ) : welcomeMessage ? (
-            <div className="bg-moovio-dark/50 rounded-lg p-4 max-w-md mx-auto mb-4">
-              <p className="text-gray-300 text-sm leading-relaxed">
+            <div className="bg-moovio-gray/20 backdrop-blur-sm rounded-3xl p-8 border border-gray-700/30 mb-8 animate-fade-in">
+              <p className="text-gray-200 leading-relaxed text-lg">
                 {welcomeMessage}
               </p>
             </div>
           ) : (
-            <p className="text-gray-400 max-w-md">
-              I'm here to help you discover amazing movies and TV shows based on your preferences.
+            <p className="text-gray-300 text-lg leading-relaxed mb-8">
+              I'm here to help you discover amazing movies and TV shows! You can ask me for recommendations, trending content, or anything about entertainment.
             </p>
           )}
         </div>
 
-        {/* Quick action buttons */}
-        <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-          <QuickActionButton
-            icon="🎬"
-            text="Recommend a movie"
-            onClick={() => handleQuickAction("Recommend a movie for me")}
-          />
-          
-          <QuickActionButton
-            icon="📺"
-            text="Suggest a TV show"
-            onClick={() => handleQuickAction("Suggest a TV show for me")}
-          />
-          
-          <QuickActionButton
-            icon="🔥"
-            text="What's trending?"
-            onClick={() => handleQuickAction("What's trending right now?")}
-          />
-          
-          <QuickActionButton
-            icon="💬"
-            text="Type your message"
-            onClick={() => navigate('/chat')}
-          />
+        {/* Quick action cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mb-16">
+          {quickActions.map((action, index) => (
+            <button
+              key={index}
+              onClick={action.onClick}
+              className="group relative bg-moovio-gray/30 backdrop-blur-md border border-gray-700/40 rounded-3xl p-8 hover:border-gray-600/60 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-2xl animate-fade-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className={`p-4 rounded-2xl transition-all duration-300 ${action.accent} group-hover:scale-110`}>
+                  {action.icon}
+                </div>
+                
+                <div>
+                  <h3 className="text-white font-semibold text-lg mb-2 group-hover:text-white transition-colors duration-300">
+                    {action.text}
+                  </h3>
+                  <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
+                    {action.description}
+                  </p>
+                </div>
+              </div>
+
+              {/* Hover gradient overlay */}
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-moovio-red/5 via-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </button>
+          ))}
         </div>
 
-        {/* Footer info */}
-        <div className="mt-12 text-center">
-          <p className="text-gray-500 text-sm">
-            Powered by AI • Personalized for you
-          </p>
+        {/* Bottom decoration */}
+        <div className="flex items-center gap-8 opacity-30">
+          <div className="w-12 h-0.5 bg-gradient-to-r from-transparent to-moovio-red"></div>
+          <div className="text-gray-500 text-sm">Powered by AI</div>
+          <div className="w-12 h-0.5 bg-gradient-to-l from-transparent to-moovio-red"></div>
         </div>
       </main>
 

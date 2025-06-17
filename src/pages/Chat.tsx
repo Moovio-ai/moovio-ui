@@ -11,17 +11,21 @@ import { SuggestionChips } from '../components/SuggestionChips';
 import { VoiceRecorder } from '../components/VoiceRecorder';
 import { ApiKeySetup } from '../components/ApiKeySetup';
 import { HeaderMenu } from '../components/HeaderMenu';
+import { CommunicationModeSelector } from '../components/CommunicationModeSelector';
 
 export const Chat: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { messages, isLoading, sendMessage } = useChat();
+  const { messages, isLoading, useSSE, sendMessage, toggleSSE } = useChat();
   const [inputValue, setInputValue] = useState('');
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const [showApiKeySetup, setShowApiKeySetup] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const hasProcessedInitialMessage = useRef(false);
+
+  // Check if API key exists
+  const hasApiKey = !!localStorage.getItem('openai-api-key');
 
   // Handle initial message from navigation state
   useEffect(() => {
@@ -186,7 +190,14 @@ export const Chat: React.FC = () => {
             </div>
           </div>
           
-          <HeaderMenu onAction={handleMenuAction} />
+          <div className="flex items-center gap-4">
+            <CommunicationModeSelector
+              useSSE={useSSE}
+              onToggle={toggleSSE}
+              hasApiKey={hasApiKey}
+            />
+            <HeaderMenu onAction={handleMenuAction} />
+          </div>
         </div>
       </header>
 
@@ -201,6 +212,11 @@ export const Chat: React.FC = () => {
             <p className="text-gray-400 max-w-md mx-auto text-base leading-relaxed">
               Ask me anything about movies and TV shows. I can recommend content, tell you what's trending, or just chat about entertainment!
             </p>
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-500">
+                Communication mode: <span className="text-moovio-red font-medium">{useSSE && hasApiKey ? 'SSE Streaming' : 'REST API'}</span>
+              </p>
+            </div>
           </div>
         )}
         
@@ -213,7 +229,9 @@ export const Chat: React.FC = () => {
                 <Avatar size="sm" className="flex-shrink-0 mt-1" state="thinking" />
                 <div className="flex items-center gap-3 text-gray-300">
                   <Loader2 size={18} className="animate-spin" />
-                  <span className="text-[15px]">Thinking...</span>
+                  <span className="text-[15px]">
+                    {useSSE && hasApiKey ? 'Streaming...' : 'Thinking...'}
+                  </span>
                 </div>
               </div>
             </div>

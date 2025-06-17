@@ -2,12 +2,26 @@
 import { useState, useCallback } from 'react';
 import { ChatMessage, UserPreferences } from '../types';
 import { apiService } from '../services/api';
+import { useSendMessageSSE } from './useSendMessageSSE';
 import { toast } from '@/hooks/use-toast';
 
 export const useChat = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [useSSE, setUseSSE] = useState(() => {
+    const saved = localStorage.getItem('moovio-use-sse');
+    return saved === 'true';
+  });
+
+  // Get OpenAI API key for SSE
+  const openaiKey = localStorage.getItem('openai-api-key') || '';
+  
+  const sendMessageSSE = useSendMessageSSE({
+    setMessages,
+    setIsLoading,
+    openaiKey,
+  });
 
   const addMessage = useCallback((message: Omit<ChatMessage, 'id' | 'timestamp'>) => {
     const newMessage: ChatMessage = {
@@ -20,7 +34,7 @@ export const useChat = () => {
     return newMessage;
   }, []);
 
-  const sendMessage = useCallback(async (content: string, context?: object) => {
+  const sendMessageREST = useCallback(async (content: string, context?: object) => {
     if (!content.trim()) return;
 
     // Add user message
@@ -70,6 +84,19 @@ export const useChat = () => {
     }
   }, [addMessage, isOnline]);
 
+  const sendMessage = useCallback(async (content: string, context?: object) => {
+    if (useSSE && openaiKey) {
+      sendMessageSSE(content, context);
+    } else {
+      await sendMessageREST(content, context);
+    }
+  }, [useSSE, openaiKey, sendMessageSSE, sendMessageREST]);
+
+  const toggleSSE = useCallback((enabled: boolean) => {
+    setUseSSE(enabled);
+    localStorage.setItem('moovio-use-sse', enabled.toString());
+  }, []);
+
   const clearChat = useCallback(() => {
     setMessages([]);
   }, []);
@@ -92,8 +119,10 @@ export const useChat = () => {
     messages,
     isLoading,
     isOnline,
+    useSSE,
     sendMessage,
     clearChat,
     addMessage,
+    toggleSSE,
   };
 };
